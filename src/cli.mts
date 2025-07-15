@@ -3,7 +3,7 @@ import parseArgs from "minimist";
 import esbuildHtml from "./index.mjs";
 
 const usage = `
-esbuild-html [-h][-m <metafile>] [<dirpath>]
+esbuild-html-link [-h][-m <metafile>] [<dirpath>]
 -h              help
 -m <metafile>   name of metafile, defaults to meta.json
                 ** This is the same value as you pass to esbuild for --metafile **
