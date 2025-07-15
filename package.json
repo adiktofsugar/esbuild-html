@@ -1,0 +1,27 @@
+{
+	"name": "esbuild-html",
+	"version": "1.0.0",
+	"description": "Replace links in html based on esbuild metafile",
+	"main": "dist/cli.mjs",
+	"scripts": {
+		"build": "esbuild src/* --platform=node --outdir=dist --out-extension:.js=.mjs",
+		"lint": "biome check",
+		"fix": "biome check --fix --unsafe",
+		"test": "./scripts/test.bash"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@biomejs/biome": "^2.1.1",
+		"@types/minimist": "^1.2.5",
+		"@types/node": "^24.0.13",
+		"esbuild": "^0.25.6",
+		"tsx": "^4.20.3",
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"chalk": "^5.4.1",
+		"cheerio": "^1.1.0",
+		"minimist": "^1.2.8"
+	}
+}
