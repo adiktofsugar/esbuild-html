@@ -18,7 +18,6 @@ Finds html files you used as an entry point and copied over and rewrites <link>
 
 The html file's references must be to the entrypoint file.
 `;
-console.log(usage);
 
 const args = parseArgs(process.argv.slice(2), {
 	boolean: ["help", "verbose"],
@@ -45,7 +44,9 @@ if (args.verbose) {
 } else if (args.quiet) {
 	loglevel = Logger.ERROR;
 }
-Logger.useDefaults(loglevel);
+Logger.useDefaults({
+	defaultLevel: loglevel,
+});
 
 const workingDirpath = path.resolve(args._[0] || ".", process.cwd());
 esbuildHtml(workingDirpath, args.metafile);
