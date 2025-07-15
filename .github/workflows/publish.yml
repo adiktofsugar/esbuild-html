@@ -13,4 +13,6 @@ jobs:
     - run: npm ci
     - run: npm run build
     - run: npm test
-    - run: npm publish --dry-run
+    - uses: JS-DevTools/npm-publish@v3
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
