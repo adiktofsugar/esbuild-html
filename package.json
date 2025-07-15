@@ -2,7 +2,8 @@
 	"name": "esbuild-html-link",
 	"version": "1.0.0",
 	"description": "Replace links in html based on esbuild metafile",
-	"main": "dist/cli.mjs",
+	"main": "dist/index.mjs",
+	"bin": "dist/cli.mjs",
 	"scripts": {
 		"build": "esbuild src/* --platform=node --outdir=dist --out-extension:.js=.mjs",
 		"lint": "biome check",
