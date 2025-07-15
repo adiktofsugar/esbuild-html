@@ -1,6 +1,6 @@
 {
 	"name": "esbuild-html-link",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Replace links in html based on esbuild metafile",
 	"main": "dist/index.mjs",
 	"bin": "dist/cli.mjs",
