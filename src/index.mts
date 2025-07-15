@@ -3,6 +3,7 @@ import path from "node:path";
 import chalk from "chalk";
 import * as cheerio from "cheerio";
 import type { Metafile } from "esbuild";
+import Logger from "js-logger";
 
 export default function esbuildHtml(
 	absWorkingDir: string,
@@ -12,8 +13,10 @@ export default function esbuildHtml(
 	if (!fs.existsSync(metafileAbspath)) {
 		throw new Error(`Metafile does not exist at ${metafileAbspath}`);
 	}
+	Logger.debug(`metafile is ${metafileAbspath}`);
 	const metafile = JSON.parse(fs.readFileSync(metafileAbspath, "utf-8"));
 	assertIsMetafile(metafile);
+	Logger.debug(`metafile contents: ${JSON.stringify(metafile, null, 2)}`);
 
 	const { outputs } = metafile;
 
@@ -30,11 +33,13 @@ export default function esbuildHtml(
 			cssBundle: output.cssBundle,
 		};
 	}
+	Logger.debug(`input to output: ${JSON.stringify(inputKeyToOutput, null, 2)}`);
 
 	for (const [inputKey, { outputKey }] of Object.entries(inputKeyToOutput)) {
 		if (!inputKey.endsWith(".html")) {
 			continue;
 		}
+		Logger.info(`Processing ${inputKey}`);
 		const outputFilepath = path.resolve(absWorkingDir, outputKey);
 		const inputFilepath = path.resolve(absWorkingDir, inputKey);
 		const content = fs.readFileSync(outputFilepath);
@@ -42,7 +47,9 @@ export default function esbuildHtml(
 		const references: { kind: "link" | "script"; from: string; to: string }[] =
 			[];
 		$('link[rel="stylesheet"]').each(function () {
-			const href = $(this).attr("href");
+			const $el = $(this);
+			const href = $el.attr("href");
+			Logger.debug(`Found link with href "${href}"`);
 			if (!href) return;
 			// this is a relative path to an entry point
 			const hrefFilepath = path.resolve(path.dirname(inputFilepath), href);
@@ -56,7 +63,7 @@ export default function esbuildHtml(
 			}
 			const cssFilepath = path.resolve(absWorkingDir, hrefOutput.cssBundle);
 			const newHref = path.relative(path.dirname(outputFilepath), cssFilepath);
-			$(this).attr("href", newHref);
+			$el.attr("href", newHref);
 			references.push({
 				kind: "link",
 				from: href,
@@ -64,7 +71,9 @@ export default function esbuildHtml(
 			});
 		});
 		$("script").each(function () {
-			const href = $(this).attr("src");
+			const $el = $(this);
+			const href = $el.attr("src");
+			Logger.debug(`Found script with src "${href}"`);
 			if (!href) return;
 			// this is a relative path to an entry point
 			const hrefFilepath = path.resolve(path.dirname(inputFilepath), href);
@@ -73,7 +82,7 @@ export default function esbuildHtml(
 			if (!hrefOutput) return;
 			const jsFilepath = path.resolve(absWorkingDir, hrefOutput.outputKey);
 			const newHref = path.relative(path.dirname(outputFilepath), jsFilepath);
-			$(this).attr("src", newHref);
+			$el.attr("src", newHref);
 			references.push({ kind: "script", from: href, to: newHref });
 		});
 		// Since I added the hash, I probably need to change it back...this is the main
