@@ -31,9 +31,6 @@ const args = parseArgs(process.argv.slice(2), {
 		quiet: "q",
 		"preserve-metafile": "D",
 	},
-	default: {
-		metafile: "meta.json",
-	},
 });
 
 if (args.help) {

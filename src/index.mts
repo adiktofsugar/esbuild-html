@@ -10,14 +10,35 @@ interface EsbuildHtmlOptions {
 	deleteMetafile?: boolean;
 }
 
+export const defaultMetaRelpaths = [
+	".meta.json",
+	"meta.json",
+	".metafile.json",
+	"metafile.json",
+];
+
 export default function esbuildHtml(
 	absWorkingDir: string,
 	options: EsbuildHtmlOptions = {},
 ) {
-	const { metafileRelpath = "meta.json", deleteMetafile = true } = options;
-	const metafileAbspath = path.join(absWorkingDir, metafileRelpath);
-	if (!fs.existsSync(metafileAbspath)) {
-		throw new Error(`Metafile does not exist at ${metafileAbspath}`);
+	const { metafileRelpath, deleteMetafile = true } = options;
+
+	let metafileAbspath: string | null = null;
+	if (metafileRelpath) {
+		metafileAbspath = path.join(absWorkingDir, metafileRelpath);
+		if (!fs.existsSync(metafileAbspath)) {
+			throw new Error(`Metafile does not exist at ${metafileAbspath}`);
+		}
+	} else {
+		const metafileAbspaths = defaultMetaRelpaths.map((p) =>
+			path.join(absWorkingDir, p),
+		);
+		metafileAbspath = metafileAbspaths.find((p) => fs.existsSync(p)) || null;
+		if (!metafileAbspath) {
+			throw new Error(
+				`Metafile does not exist at any default locations: ${defaultMetaRelpaths.join(", ")}`,
+			);
+		}
 	}
 	Logger.debug(`metafile is ${metafileAbspath}`);
 	const metafile = JSON.parse(fs.readFileSync(metafileAbspath, "utf-8"));

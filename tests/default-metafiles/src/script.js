@@ -1,0 +1,1 @@
+console.log("Testing default metafile paths");
