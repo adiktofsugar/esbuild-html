@@ -5,6 +5,9 @@ set -o pipefail
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)"
 cd "$root_dir"
 
+# They all use the compiled cause it's 2x as fast
+npm run build
+
 # Start timing
 start_time=$(date +%s%N)
 
