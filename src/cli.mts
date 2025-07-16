@@ -5,10 +5,12 @@ import parseArgs from "minimist";
 import esbuildHtml from "./index.mjs";
 
 const usage = `
-esbuild-html-link [-h][-m <metafile>] [<dirpath>]
+esbuild-html-link [-h][-m <metafile>][-D] [<dirpath>]
 -h              help
 -m <metafile>   name of metafile, defaults to meta.json
                 ** This is the same value as you pass to esbuild for --metafile **
+-D, --preserve-metafile
+                preserve the metafile after processing
 -v 				verbose
 -q 				quiet
 <dirpath>       path to working dir, defaults to cwd
@@ -20,13 +22,14 @@ The html file's references must be to the entrypoint file.
 `;
 
 const args = parseArgs(process.argv.slice(2), {
-	boolean: ["help", "verbose"],
+	boolean: ["help", "verbose", "preserve-metafile"],
 	string: ["metafile"],
 	alias: {
 		help: "h",
 		metafile: "m",
 		verbose: "v",
 		quiet: "q",
+		"preserve-metafile": "D",
 	},
 	default: {
 		metafile: "meta.json",
@@ -49,4 +52,7 @@ Logger.useDefaults({
 });
 
 const workingDirpath = path.resolve(args._[0] || ".", process.cwd());
-esbuildHtml(workingDirpath, args.metafile);
+esbuildHtml(workingDirpath, {
+	metafileRelpath: args.metafile,
+	deleteMetafile: !args["preserve-metafile"],
+});

@@ -8,5 +8,5 @@ const $ = cheerio.load(html);
 assert.equal($('link[rel="stylesheet"]').attr("href"), "index.css");
 assert.equal($("script").attr("src"), "index.js");
 
-// Check that meta.json was deleted by default
-assert.equal(fs.existsSync("meta.json"), false, "meta.json should be deleted after processing");
+// Check that meta.json was preserved with -D flag
+assert.equal(fs.existsSync("meta.json"), true, "meta.json should be preserved with -D flag");

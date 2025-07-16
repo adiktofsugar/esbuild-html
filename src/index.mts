@@ -5,10 +5,16 @@ import * as cheerio from "cheerio";
 import type { Metafile } from "esbuild";
 import Logger from "js-logger";
 
+interface EsbuildHtmlOptions {
+	metafileRelpath?: string;
+	deleteMetafile?: boolean;
+}
+
 export default function esbuildHtml(
 	absWorkingDir: string,
-	metafileRelpath: string = "meta.json",
+	options: EsbuildHtmlOptions = {},
 ) {
+	const { metafileRelpath = "meta.json", deleteMetafile = true } = options;
 	const metafileAbspath = path.join(absWorkingDir, metafileRelpath);
 	if (!fs.existsSync(metafileAbspath)) {
 		throw new Error(`Metafile does not exist at ${metafileAbspath}`);
@@ -101,6 +107,11 @@ export default function esbuildHtml(
 				` - ${chalk.gray(`<${ref.kind} src=`)}${chalk.red(ref.from)}${chalk.gray("->")}${chalk.green(ref.to)}${chalk.gray(" />")}`,
 			);
 		}
+	}
+
+	if (deleteMetafile) {
+		fs.unlinkSync(metafileAbspath);
+		Logger.info(`Deleted metafile ${metafileAbspath}`);
 	}
 }
 
